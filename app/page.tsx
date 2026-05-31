@@ -27,7 +27,12 @@ const ROW_H = 36; // px
 // Max regions across all children = 4 (cerebrum), so card body height is fixed to 4 rows
 const MAX_REGIONS = 4;
 
-export default function Home() {
+export default function Root() {
+  const [resetKey, setResetKey] = useState(0);
+  return <Home key={resetKey} onReset={() => setResetKey(k => k + 1)} />;
+}
+
+function Home({ onReset }: { onReset: () => void }) {
   const [inst] = useState(() => createBrainInstances());
 
   const [brainDamaged, setBrainDamaged] = useState(false);
@@ -141,13 +146,7 @@ export default function Home() {
   };
 
   const handleReset = () => {
-    setBrainDamaged(false);
-    setRegionDamaged({ cerebrum:[false,false,false,false], diencephalon:[false,false], brainstem:[false,false,false], cerebellum:[false] });
-    setSelected(null);
-    setMonitorLines([]);
-    setMonitorTitle('');
-    setLogs([]);
-    setTimeout(() => addLog('SYSTEM RESET — all regions restored', 'sys'), 10);
+    onReset(); // remounts component → createBrainInstances() called fresh
   };
 
   const anyDamaged = (key: BrainKey) => regionDamaged[key].some(Boolean);
