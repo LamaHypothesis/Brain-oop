@@ -170,7 +170,7 @@ export default function Home() {
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_480px] min-h-[calc(100vh-61px)]">
 
         {/* ── LEFT: Hierarchy ── */}
-        <div className="py-10 px-10 flex flex-col items-center gap-0 overflow-auto">
+        <div className="py-10 px-12 flex flex-col items-center gap-0 overflow-auto">
 
           {/* ADT node */}
           <motion.button
@@ -222,7 +222,7 @@ export default function Home() {
           </motion.div>
 
           {/* Fan-out arrows */}
-          <div className="relative w-full max-w-5xl" style={{ height: '56px' }}>
+          <div className="relative w-full max-w-5xl mt-0" style={{ height: '56px' }}>
             <svg className="absolute inset-0 w-full h-full overflow-visible" preserveAspectRatio="none">
               <line x1="50%" y1="0" x2="50%" y2="18" className="connector" strokeWidth="1.5" />
               <line x1={`${fanX[0]}%`} y1="18" x2={`${fanX[3]}%`} y2="18" className="connector" strokeWidth="1.5" />
@@ -240,7 +240,7 @@ export default function Home() {
           </div>
 
           {/* ── Child nodes ── */}
-          <div className="grid grid-cols-4 gap-5 w-full max-w-5xl">
+          <div className="grid grid-cols-4 gap-6 w-full max-w-5xl">
             {CHILD_KEYS.map((key, ci) => {
               const meta    = META[key];
               const damaged = anyDamaged(key);
@@ -321,25 +321,7 @@ export default function Home() {
             })}
           </div>
 
-          {/* Legend */}
-          <div className="flex gap-8 mt-10 text-xs" style={{ color: 'var(--text-dim)' }}>
-            <span className="flex items-center gap-2">
-              <div className="w-5 h-px border-t border-dashed" style={{ borderColor: 'rgba(200,255,232,0.2)' }} />
-              inheritance
-            </span>
-            <span className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-sm" style={{ background: 'var(--green)', opacity: 0.6 }} />
-              healthy
-            </span>
-            <span className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-sm" style={{ background: 'var(--red)' }} />
-              damaged
-            </span>
-            <span className="flex items-center gap-2">
-              <input type="checkbox" className="med-checkbox" readOnly />
-              &nbsp;got_hurt()
-            </span>
-          </div>
+
         </div>
 
         {/* ── RIGHT: Monitor ── */}
