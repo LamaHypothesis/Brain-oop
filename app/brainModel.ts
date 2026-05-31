@@ -1,158 +1,242 @@
-// ── OOP Class Hierarchy (TypeScript port of Python original) ──────────────
+// ── OOP Class Hierarchy ───────────────────────────────────────────────────
 // BrainADT (Abstract) → Brain (Base) → Cerebrum / Diencephalon / Brainstem / Cerebellum
-
-export interface BrainRegion {
-  name: string;
-  function: string;
-  isHealthy: boolean;
-  damageEffect: string;
-}
-
-// Abstract interface (mirrors Brain_ADT.py)
-export interface BrainADT {
-  name: string;
-  struct: BrainRegion[];
-  status(): StatusResult[];
-  gotHurt(index: number): HurtResult;
-}
 
 export interface StatusResult {
   region: string;
   healthy: boolean;
   message: string;
-  prefix: string;
 }
 
-export interface HurtResult {
+export interface GotHurtResult {
   success: boolean;
-  message: string;
+  regionName: string;
+  index: number;
 }
 
-// Base class: Brain (mirrors Brain.py)
+// Abstract interface — mirrors Brain_ADT.py
+export interface BrainADT {
+  readonly name: string;
+  readonly struct: string[];
+  is_damaged: boolean | boolean[];
+  status(): StatusResult[];
+  got_hurt(index?: number): GotHurtResult;
+}
+
+// ── Base Class: Brain ─────────────────────────────────────────────────────
 abstract class Brain implements BrainADT {
-  protected _name: string;
-  protected _struct: BrainRegion[];
+  protected __name: string;
+  protected __struct: string[];
+  protected _is_damaged: boolean;   // Brain level: single T/F
 
   constructor(name: string) {
-    this._name = name;
-    this._struct = [];
+    this.__name = name;
+    this.__struct = ['brainstem', 'cerebellum', 'cerebrum', 'diencephalon'];
+    this._is_damaged = false;
   }
 
-  get name() { return this._name; }
-  get struct() { return this._struct; }
+  get name() { return this.__name; }
+  get struct() { return this.__struct; }
+  get is_damaged() { return this._is_damaged; }
+  set is_damaged(v: boolean | boolean[]) { this._is_damaged = v as boolean; }
 
-  // Base implementation (overridden by subclasses → Polymorphism)
+  // Brain.status() — overridden by subclasses (Polymorphism)
   status(): StatusResult[] {
-    return this._struct.map(item => ({
-      region: item.name,
-      healthy: item.isHealthy,
-      message: item.isHealthy ? `${item.name} is normal` : `${item.name} got damaged`,
-      prefix: item.isHealthy ? 'OK' : 'DAMAGED',
-    }));
+    return [{
+      region: this.__name,
+      healthy: !this._is_damaged,
+      message: this._is_damaged
+        ? 'Brain damage detected. One or more regions are compromised. Check individual regions for details.'
+        : 'Brain is fully operational. All regions are functioning within normal parameters.',
+    }];
   }
 
-  gotHurt(index: number): HurtResult {
-    if (index >= 0 && index < this._struct.length) {
-      const region = this._struct[index];
-      region.isHealthy = false;
-      return { success: true, message: `${this._name}'s ${region.name} got damaged` };
-    }
-    return { success: false, message: 'Invalid index entered' };
+  got_hurt(index?: number): GotHurtResult {
+    this._is_damaged = true;
+    return { success: true, regionName: this.__name, index: index ?? 0 };
   }
 }
 
-// ── Subclass: Cerebrum (대뇌) – cerebrum.py ──────────────────────────────
+// ── Subclass: Cerebrum (대뇌) ──────────────────────────────────────────────
 class Cerebrum extends Brain {
+  private __struct_regions: string[];
+  private __function: string[];
+  private __symptom: string[];
+  protected _region_is_damaged: boolean[];
+
   constructor(name: string) {
     super(name);
-    this._struct = [
-      { name: 'Frontal Lobe',   function: 'executive function and motor control',    isHealthy: true, damageEffect: 'Personality changes and paralysis' },
-      { name: 'Temporal Lobe',  function: 'auditory processing and memory',           isHealthy: true, damageEffect: 'Hearing loss and memory impairment' },
-      { name: 'Parietal Lobe',  function: 'sensory integration and spatial awareness',isHealthy: true, damageEffect: 'Sensory neglect and disorientation' },
-      { name: 'Occipital Lobe', function: 'visual processing',                        isHealthy: true, damageEffect: 'Visual hallucinations and cortical blindness' },
+    this.__struct_regions = ['Frontal Lobe', 'Temporal Lobe', 'Parietal Lobe', 'Occipital Lobe'];
+    this.__function = [
+      'executive function and motor control',
+      'auditory processing and memory',
+      'sensory integration and spatial awareness',
+      'visual processing',
     ];
+    this.__symptom = [
+      'Personality changes and paralysis',
+      'Hearing loss and memory impairment',
+      'Sensory neglect and disorientation',
+      'Visual hallucinations and cortical blindness',
+    ];
+    this._region_is_damaged = [false, false, false, false];
   }
 
-  // Overriding status() → Polymorphism
+  get struct() { return this.__struct_regions; }
+  get is_damaged(): boolean[] { return this._region_is_damaged; }
+  set is_damaged(v: boolean | boolean[]) {
+    if (Array.isArray(v)) this._region_is_damaged = v;
+  }
+
   status(): StatusResult[] {
-    return this._struct.map(item => ({
-      region: item.name,
-      healthy: item.isHealthy,
-      message: item.isHealthy
-        ? `The ${item.name} works for ${item.function}`
-        : `${item.damageEffect} occur because the ${item.name} got damaged`,
-      prefix: item.isHealthy ? 'COGNITIVE-ACTIVE' : 'NEURO-DEFICIT',
+    return this.__struct_regions.map((region, i) => ({
+      region,
+      healthy: !this._region_is_damaged[i],
+      message: this._region_is_damaged[i]
+        ? `Damaged ${region} cause ${this.__symptom[i]}`
+        : `The ${region} works for ${this.__function[i]}.`,
     }));
+  }
+
+  got_hurt(index?: number): GotHurtResult {
+    const i = index ?? Math.floor(Math.random() * this.__struct_regions.length);
+    this._region_is_damaged[i] = true;
+    this._is_damaged = true;
+    return { success: true, regionName: this.__struct_regions[i], index: i };
   }
 }
 
-// ── Subclass: Diencephalon (사이뇌) – diencephalon.py ───────────────────
+// ── Subclass: Diencephalon (사이뇌) ────────────────────────────────────────
 class Diencephalon extends Brain {
+  private __struct_regions: string[];
+  private __function: string[];
+  private __symptom: string[];
+  protected _region_is_damaged: boolean[];
+
   constructor(name: string) {
     super(name);
-    this._struct = [
-      { name: 'Thalamus',      function: 'sensory relay and consciousness',        isHealthy: true, damageEffect: 'Sensory impairment and coma' },
-      { name: 'Hypothalamus',  function: 'homeostasis and hormone regulation',     isHealthy: true, damageEffect: 'Temperature dysregulation and sleep disorders' },
+    this.__struct_regions = ['Thalamus', 'Hypothalamus'];
+    this.__function = [
+      'sensory relay and consciousness',
+      'homeostasis and hormone regulation',
     ];
+    this.__symptom = [
+      'Sensory impairment and coma',
+      'Temperature dysregulation and sleep disorders',
+    ];
+    this._region_is_damaged = [false, false];
+  }
+
+  get struct() { return this.__struct_regions; }
+  get is_damaged(): boolean[] { return this._region_is_damaged; }
+  set is_damaged(v: boolean | boolean[]) {
+    if (Array.isArray(v)) this._region_is_damaged = v;
   }
 
   status(): StatusResult[] {
-    return this._struct.map(item => ({
-      region: item.name,
-      healthy: item.isHealthy,
-      message: item.isHealthy
-        ? `The ${item.name} works for ${item.function}`
-        : `${item.damageEffect} occur because the ${item.name} got damaged`,
-      prefix: item.isHealthy ? 'HOMEO-BALANCED' : 'SENSORY-BLOCK',
+    return this.__struct_regions.map((region, i) => ({
+      region,
+      healthy: !this._region_is_damaged[i],
+      message: this._region_is_damaged[i]
+        ? `Damaged ${region} cause ${this.__symptom[i]}`
+        : `The ${region} works for ${this.__function[i]}.`,
     }));
+  }
+
+  got_hurt(index?: number): GotHurtResult {
+    const i = index ?? Math.floor(Math.random() * this.__struct_regions.length);
+    this._region_is_damaged[i] = true;
+    this._is_damaged = true;
+    return { success: true, regionName: this.__struct_regions[i], index: i };
   }
 }
 
-// ── Subclass: Brainstem (뇌간) – brainstem.py ───────────────────────────
+// ── Subclass: Brainstem (뇌간) ─────────────────────────────────────────────
 class Brainstem extends Brain {
+  private __struct_regions: string[];
+  private __function: string[];
+  private __symptom: string[];
+  protected _region_is_damaged: boolean[];
+
   constructor(name: string) {
     super(name);
-    this._struct = [
-      { name: 'Midbrain',            function: 'sensory relay, motor signaling',    isHealthy: true, damageEffect: 'Tremors, vision loss' },
-      { name: 'Pons',                function: 'breathing, communication bridge',   isHealthy: true, damageEffect: 'Locked-in syndrome, facial palsy' },
-      { name: 'Medulla Oblongata',   function: 'heart rate, autonomic vitals',      isHealthy: true, damageEffect: 'Respiratory failure, death' },
+    this.__struct_regions = ['Midbrain', 'Pons', 'Medulla Oblongata'];
+    this.__function = [
+      'sensory relay and motor signaling',
+      'breathing and communication bridge',
+      'heart rate and autonomic vitals',
     ];
+    this.__symptom = [
+      'Tremors and vision loss',
+      'Locked-in syndrome and facial palsy',
+      'Respiratory failure and death',
+    ];
+    this._region_is_damaged = [false, false, false];
+  }
+
+  get struct() { return this.__struct_regions; }
+  get is_damaged(): boolean[] { return this._region_is_damaged; }
+  set is_damaged(v: boolean | boolean[]) {
+    if (Array.isArray(v)) this._region_is_damaged = v;
   }
 
   status(): StatusResult[] {
-    return this._struct.map(item => ({
-      region: item.name,
-      healthy: item.isHealthy,
-      message: item.isHealthy
-        ? `The ${item.name} works for ${item.function}`
-        : `${item.damageEffect} occur because the ${item.name} got damaged`,
-      prefix: item.isHealthy ? 'VITAL-CORE' : 'CRITICAL-LIFE',
+    return this.__struct_regions.map((region, i) => ({
+      region,
+      healthy: !this._region_is_damaged[i],
+      message: this._region_is_damaged[i]
+        ? `Damaged ${region} cause ${this.__symptom[i]}`
+        : `The ${region} works for ${this.__function[i]}.`,
     }));
+  }
+
+  got_hurt(index?: number): GotHurtResult {
+    const i = index ?? Math.floor(Math.random() * this.__struct_regions.length);
+    this._region_is_damaged[i] = true;
+    this._is_damaged = true;
+    return { success: true, regionName: this.__struct_regions[i], index: i };
   }
 }
 
-// ── Subclass: Cerebellum (소뇌) – cerebellum.py ─────────────────────────
+// ── Subclass: Cerebellum (소뇌) ────────────────────────────────────────────
 class Cerebellum extends Brain {
+  private __struct_regions: string[];
+  private __function: string[];
+  private __symptom: string[];
+  protected _region_is_damaged: boolean[];
+
   constructor(name: string) {
     super(name);
-    this._struct = [
-      { name: 'Cerebellum', function: 'motor control, cognitive function', isHealthy: true, damageEffect: 'Ataxia, dysmetria' },
-    ];
+    this.__struct_regions = ['Cerebellum'];
+    this.__function = ['motor control and cognitive function'];
+    this.__symptom = ['Ataxia and dysmetria'];
+    this._region_is_damaged = [false];
+  }
+
+  get struct() { return this.__struct_regions; }
+  get is_damaged(): boolean[] { return this._region_is_damaged; }
+  set is_damaged(v: boolean | boolean[]) {
+    if (Array.isArray(v)) this._region_is_damaged = v;
   }
 
   status(): StatusResult[] {
-    return this._struct.map(item => ({
-      region: item.name,
-      healthy: item.isHealthy,
-      message: item.isHealthy
-        ? `The ${item.name} works for ${item.function}`
-        : `${item.damageEffect} occur because the ${item.name} got damaged`,
-      prefix: item.isHealthy ? 'MOTOR-STABLE' : 'ATAXIC-FAILED',
+    return this.__struct_regions.map((region, i) => ({
+      region,
+      healthy: !this._region_is_damaged[i],
+      message: this._region_is_damaged[i]
+        ? `Damaged ${region} cause ${this.__symptom[i]}`
+        : `The ${region} works for ${this.__function[i]}.`,
     }));
+  }
+
+  got_hurt(index?: number): GotHurtResult {
+    const i = index ?? Math.floor(Math.random() * this.__struct_regions.length);
+    this._region_is_damaged[i] = true;
+    this._is_damaged = true;
+    return { success: true, regionName: this.__struct_regions[i], index: i };
   }
 }
 
-// ── Factory / singleton instances (mirrors main.py) ─────────────────────
+// ── Factory ────────────────────────────────────────────────────────────────
 export function createBrainInstances() {
   return {
     cerebrum:     new Cerebrum('Cerebrum'),
@@ -162,4 +246,4 @@ export function createBrainInstances() {
   };
 }
 
-export type { Brain };
+export type BrainInstance = Cerebrum | Diencephalon | Brainstem | Cerebellum;

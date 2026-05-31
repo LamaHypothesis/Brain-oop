@@ -1,116 +1,167 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg: #0a0a0f;
-  --surface: #111118;
-  --surface2: #1a1a24;
-  --border: rgba(255,255,255,0.08);
-  --accent-cerebrum: #7c6af5;
-  --accent-diencephalon: #f5a623;
-  --accent-brainstem: #e05c5c;
-  --accent-cerebellum: #4ecdc4;
-  --accent-adt: rgba(255,255,255,0.4);
-  --accent-base: rgba(255,255,255,0.6);
-  --text: #e8e8f0;
-  --text-muted: #6b6b80;
+  --bg: #050508;
+  --panel: #0a0d12;
+  --panel2: #0e1219;
+  --border: rgba(0,255,180,0.12);
+  --border2: rgba(0,255,180,0.06);
+  --green: #00ffb4;
+  --green-dim: rgba(0,255,180,0.5);
+  --green-glow: rgba(0,255,180,0.15);
+  --red: #ff4444;
+  --red-dim: rgba(255,68,68,0.5);
+  --red-glow: rgba(255,68,68,0.15);
+  --amber: #ffaa00;
+  --amber-dim: rgba(255,170,0,0.5);
+  --text: #c8ffe8;
+  --text-muted: rgba(200,255,232,0.35);
+  --text-dim: rgba(200,255,232,0.15);
+
+  --c-cerebrum: #7c6af5;
+  --c-diencephalon: #f5a623;
+  --c-brainstem: #ff4f4f;
+  --c-cerebellum: #00d4aa;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Share Tech Mono', monospace;
   overflow-x: hidden;
 }
 
-.font-display { font-family: 'Syne', sans-serif; }
+.font-display { font-family: 'Rajdhani', sans-serif; }
 
-.neural-bg {
-  background: radial-gradient(ellipse at 20% 50%, rgba(124,106,245,0.06) 0%, transparent 60%),
-              radial-gradient(ellipse at 80% 20%, rgba(78,205,196,0.04) 0%, transparent 50%),
-              radial-gradient(ellipse at 60% 80%, rgba(224,92,92,0.04) 0%, transparent 50%),
-              var(--bg);
-}
-
-.node-cerebrum {
-  background: linear-gradient(135deg, rgba(124,106,245,0.15), rgba(124,106,245,0.05));
-  border: 1px solid rgba(124,106,245,0.4);
-  box-shadow: 0 0 30px rgba(124,106,245,0.1);
-}
-.node-cerebrum:hover, .node-cerebrum.active {
-  border-color: var(--accent-cerebrum);
-  box-shadow: 0 0 40px rgba(124,106,245,0.3), 0 0 80px rgba(124,106,245,0.1);
-}
-
-.node-diencephalon {
-  background: linear-gradient(135deg, rgba(245,166,35,0.15), rgba(245,166,35,0.05));
-  border: 1px solid rgba(245,166,35,0.4);
-  box-shadow: 0 0 30px rgba(245,166,35,0.1);
-}
-.node-diencephalon:hover, .node-diencephalon.active {
-  border-color: var(--accent-diencephalon);
-  box-shadow: 0 0 40px rgba(245,166,35,0.3), 0 0 80px rgba(245,166,35,0.1);
+/* scanline overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
 }
 
-.node-brainstem {
-  background: linear-gradient(135deg, rgba(224,92,92,0.15), rgba(224,92,92,0.05));
-  border: 1px solid rgba(224,92,92,0.4);
-  box-shadow: 0 0 30px rgba(224,92,92,0.1);
-}
-.node-brainstem:hover, .node-brainstem.active {
-  border-color: var(--accent-brainstem);
-  box-shadow: 0 0 40px rgba(224,92,92,0.3), 0 0 80px rgba(224,92,92,0.1);
+/* monitor panel */
+.monitor {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: 0 0 20px var(--green-glow), inset 0 0 40px rgba(0,0,0,0.5);
+  position: relative;
 }
 
-.node-cerebellum {
-  background: linear-gradient(135deg, rgba(78,205,196,0.15), rgba(78,205,196,0.05));
-  border: 1px solid rgba(78,205,196,0.4);
-  box-shadow: 0 0 30px rgba(78,205,196,0.1);
-}
-.node-cerebellum:hover, .node-cerebellum.active {
-  border-color: var(--accent-cerebellum);
-  box-shadow: 0 0 40px rgba(78,205,196,0.3), 0 0 80px rgba(78,205,196,0.1);
+.monitor::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,255,180,0.02) 0%, transparent 100%);
+  pointer-events: none;
 }
 
+/* node cards */
 .node-adt {
-  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-  border: 1px dashed rgba(255,255,255,0.2);
+  border: 1px dashed rgba(200,255,232,0.2);
+  background: rgba(200,255,232,0.02);
 }
 .node-base {
-  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-  border: 1px solid rgba(255,255,255,0.25);
+  border: 1px solid rgba(200,255,232,0.25);
+  background: rgba(200,255,232,0.04);
+}
+.node-child {
+  border: 1px solid var(--border);
+  background: var(--panel2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.node-child:hover {
+  border-color: var(--green-dim);
+  box-shadow: 0 0 16px var(--green-glow);
+  transform: translateY(-1px);
+}
+.node-child.active {
+  border-color: var(--green);
+  box-shadow: 0 0 24px var(--green-glow), 0 0 48px rgba(0,255,180,0.06);
 }
 
-.connector-line {
-  stroke: rgba(255,255,255,0.12);
-  stroke-dasharray: 4 4;
+/* connector lines */
+.connector { stroke: rgba(200,255,232,0.15); stroke-dasharray: 3 3; }
+
+/* vitals */
+.vital-ok   { color: var(--green); }
+.vital-warn { color: var(--amber); }
+.vital-crit { color: var(--red); }
+
+/* checkbox medical style */
+.med-checkbox {
+  appearance: none;
+  width: 14px; height: 14px;
+  border: 1px solid var(--green-dim);
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.med-checkbox:checked {
+  background: var(--red);
+  border-color: var(--red);
+}
+.med-checkbox:checked::after {
+  content: '✕';
+  position: absolute;
+  top: -2px; left: 1px;
+  font-size: 10px;
+  color: white;
+  line-height: 1;
 }
 
-.damage-flash {
-  animation: damageFlash 0.6s ease;
+/* monitor readout lines */
+.readout-line {
+  animation: fadeIn 0.2s ease;
+  border-bottom: 1px solid var(--border2);
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
-@keyframes damageFlash {
-  0% { filter: brightness(1); }
-  30% { filter: brightness(2) saturate(2); }
-  100% { filter: brightness(1); }
+/* blink */
+.blink { animation: blink 1s step-end infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* pulse dot */
+.pulse { animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+
+/* damage flash */
+.flash { animation: flash 0.5s ease; }
+@keyframes flash {
+  0%  { filter: brightness(1); }
+  40% { filter: brightness(2.5) saturate(3); }
+  100%{ filter: brightness(1); }
 }
 
-.log-entry {
-  animation: slideIn 0.3s ease;
-}
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-8px); }
-  to { opacity: 1; transform: translateX(0); }
-}
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-.pulse-dot {
-  animation: pulse 2s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.85); }
+/* grid line bg on monitor */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(0,255,180,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,180,0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
