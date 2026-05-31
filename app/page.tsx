@@ -222,7 +222,7 @@ export default function Home() {
           </motion.div>
 
           {/* Fan-out arrows */}
-          <div className="relative w-full max-w-5xl mt-0" style={{ height: '56px' }}>
+          <div className="relative mt-0" style={{ height: '56px', width: '100%', maxWidth: '1024px' }}>
             <svg className="absolute inset-0 w-full h-full overflow-visible" preserveAspectRatio="none">
               <line x1="50%" y1="0" x2="50%" y2="18" className="connector" strokeWidth="1.5" />
               <line x1={`${fanX[0]}%`} y1="18" x2={`${fanX[3]}%`} y2="18" className="connector" strokeWidth="1.5" />
@@ -240,7 +240,7 @@ export default function Home() {
           </div>
 
           {/* ── Child nodes ── */}
-          <div className="grid grid-cols-4 gap-6 w-full max-w-5xl">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', width: '100%', maxWidth: '1024px' }}>
             {CHILD_KEYS.map((key, ci) => {
               const meta    = META[key];
               const damaged = anyDamaged(key);
