@@ -277,18 +277,18 @@ export default function Home() {
                         <div className="w-2 h-2 rounded-full"
                           style={{ background: damaged ? 'var(--red)' : 'var(--green)', animation: 'pulse 2s infinite' }} />
                       </div>
-                      <div className="text-[10px]" style={{ color: 'var(--text-dim)' }}>
+                      <div className="text-[11px] font-bold" style={{ color: 'var(--text)' }}>
                         {meta.korean}
                       </div>
-                      <div className="text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>
+                      <div className="text-[11px] mt-1 font-bold" style={{ color: 'var(--text)' }}>
                         override status()
                       </div>
                     </button>
 
                     {/* Column labels */}
                     <div className="grid border-b" style={{ gridTemplateColumns: '1fr 48px', borderColor: 'var(--border2)' }}>
-                      <div className="px-4 py-1.5 text-[10px]" style={{ color: 'var(--text-dim)' }}>REGION</div>
-                      <div className="py-1.5 text-[10px] text-center border-l"
+                      <div className="px-4 py-1.5 text-[11px] font-bold" style={{ color: 'var(--text)' }}>REGION</div>
+                      <div className="py-1.5 text-[11px] font-bold text-center border-l"
                         style={{ color: 'var(--red)', borderColor: 'var(--border2)' }}>DMG</div>
                     </div>
 
@@ -297,21 +297,34 @@ export default function Home() {
                       const regionName = regions[ri];
                       const isDmg      = dmgArr[ri] ?? false;
                       const isEmpty    = !regionName;
+                      // Korean names for each region
+                      const regionKorean: Record<string, string> = {
+                        'Frontal Lobe': '전두엽', 'Temporal Lobe': '측두엽',
+                        'Parietal Lobe': '두정엽', 'Occipital Lobe': '후두엽',
+                        'Thalamus': '시상', 'Hypothalamus': '시상하부',
+                        'Midbrain': '중뇌', 'Pons': '교뇌', 'Medulla Oblongata': '연수',
+                        'Cerebellum': '소뇌',
+                      };
 
                       return (
                         <div key={ri}
                           className="grid border-b last:border-0"
-                          style={{ gridTemplateColumns: '1fr 48px', borderColor: 'var(--border2)', height: ROW_H }}>
+                          style={{ gridTemplateColumns: '1fr 48px', borderColor: 'var(--border2)', height: ROW_H + 8 }}>
                           {/* Region name */}
                           <div className="px-4 flex items-center gap-2">
                             {!isEmpty && (
                               <>
                                 <div className="w-1.5 h-1.5 rounded-sm shrink-0 transition-colors"
                                   style={{ background: isDmg ? 'var(--red)' : meta.hex, opacity: isDmg ? 1 : 0.5 }} />
-                                <span className={`text-[11px] leading-tight ${isDmg ? 'vital-crit' : ''}`}
-                                  style={{ color: isDmg ? undefined : 'var(--text-muted)' }}>
-                                  {regionName}
-                                </span>
+                                <div className="flex flex-col">
+                                  <span className={`text-[11px] leading-tight font-bold ${isDmg ? 'vital-crit' : ''}`}
+                                    style={{ color: isDmg ? undefined : 'var(--text)' }}>
+                                    {regionName}
+                                  </span>
+                                  <span className="text-[9px] leading-tight" style={{ color: 'var(--text-muted)' }}>
+                                    {regionKorean[regionName] ?? ''}
+                                  </span>
+                                </div>
                               </>
                             )}
                           </div>
