@@ -277,10 +277,10 @@ export default function Home() {
                         <div className="w-2 h-2 rounded-full"
                           style={{ background: damaged ? 'var(--red)' : 'var(--green)', animation: 'pulse 2s infinite' }} />
                       </div>
-                      <div className="text-[11px] font-bold" style={{ color: 'var(--text)' }}>
+                      <div className="text-[11px] font-bold" style={{ color: '#000000' }}>
                         {meta.korean}
                       </div>
-                      <div className="text-[11px] mt-1 font-bold" style={{ color: 'var(--text)' }}>
+                      <div className="text-[11px] mt-1 font-bold" style={{ color: '#000000' }}>
                         override status()
                       </div>
                     </button>

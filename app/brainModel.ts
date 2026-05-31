@@ -73,10 +73,10 @@ class Cerebrum extends Brain {
       'visual processing',
     ];
     this.__symptom = [
-      'Personality changes and paralysis',
-      'Hearing loss and memory impairment',
-      'Sensory neglect and disorientation',
-      'Visual hallucinations and cortical blindness',
+      'personality changes and paralysis',
+      'hearing loss and memory impairment',
+      'sensory neglect and disorientation',
+      'visual hallucinations and cortical blindness',
     ];
     this._region_is_damaged = [false, false, false, false];
   }
@@ -120,8 +120,8 @@ class Diencephalon extends Brain {
       'homeostasis and hormone regulation',
     ];
     this.__symptom = [
-      'Sensory impairment and coma',
-      'Temperature dysregulation and sleep disorders',
+      'sensory impairment and coma',
+      'temperature dysregulation and sleep disorders',
     ];
     this._region_is_damaged = [false, false];
   }
@@ -166,9 +166,9 @@ class Brainstem extends Brain {
       'heart rate and autonomic vitals',
     ];
     this.__symptom = [
-      'Tremors and vision loss',
-      'Locked-in syndrome and facial palsy',
-      'Respiratory failure and death',
+      'tremors and vision loss',
+      'locked-in syndrome and facial palsy',
+      'respiratory failure and death',
     ];
     this._region_is_damaged = [false, false, false];
   }
@@ -208,7 +208,7 @@ class Cerebellum extends Brain {
     super(name);
     this.__struct_regions = ['Cerebellum'];
     this.__function = ['motor control and cognitive function'];
-    this.__symptom = ['Ataxia and dysmetria'];
+    this.__symptom = ['ataxia and dysmetria'];
     this._region_is_damaged = [false];
   }
 
