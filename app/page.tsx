@@ -111,8 +111,20 @@ export default function Home() {
   };
 
   const handleBrainCheckbox = (checked: boolean) => {
-    setBrainDamaged(checked);
-    if (checked) addLog('Brain.got_hurt() → overall damage flagged', 'warn');
+    if (!checked) return;
+    // pick a random child class, then random region within it
+    const randomKey = CHILD_KEYS[Math.floor(Math.random() * CHILD_KEYS.length)];
+    const regions = inst[randomKey].struct;
+    const randomIdx = Math.floor(Math.random() * regions.length);
+    const result = inst[randomKey].got_hurt(randomIdx);
+    setRegionDamaged(prev => {
+      const arr = [...prev[randomKey]];
+      arr[randomIdx] = true;
+      return { ...prev, [randomKey]: arr };
+    });
+    setBrainDamaged(true);
+    triggerFlash(randomKey);
+    addLog(`Brain.got_hurt() → random: ${META[randomKey].label}.got_hurt(${randomIdx}) → ${result.regionName} damaged`, 'crit');
   };
 
   const handleRegionCheckbox = (key: BrainKey, idx: number, checked: boolean) => {
