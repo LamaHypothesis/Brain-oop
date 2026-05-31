@@ -66,35 +66,30 @@ export default function Home() {
     setTimeout(() => setFlash(null), 500);
   };
 
-  // ── Node clicks → status() output ───────────────────────────────────────
-
   const handleADT = () => {
     setSelected('adt');
-    const lines: StatusResult[] = [
+    setMonitorLines([
       { region: 'BrainADT', healthy: true, message: "Abstract interface defining Brain's region functions and disabilities." },
       { region: 'Property', healthy: true, message: '@abstractproperty name — identifier of the brain part' },
       { region: 'Property', healthy: true, message: '@abstractproperty struct — list of sub-regions' },
       { region: 'Property', healthy: true, message: '@abstractproperty is_damaged — damage state (T/F or array)' },
       { region: 'Method',   healthy: true, message: '@abstractmethod status() — output current functional state' },
       { region: 'Method',   healthy: true, message: '@abstractmethod got_hurt(index) — apply damage to a region' },
-    ];
-    setMonitorLines(lines);
+    ]);
     addLog("ADT.info() → Brain's region's functions and disability", 'call');
   };
 
   const handleBrain = () => {
     setSelected('brain');
     const healthy = !brainDamaged;
-    const lines: StatusResult[] = [{
+    setMonitorLines([{
       region: 'Brain',
       healthy,
       message: healthy
         ? 'Brain is fully operational. All regions are functioning within normal parameters.'
         : 'Brain damage detected. One or more regions are compromised. Check individual regions for details.',
-    }];
-    setMonitorLines(lines);
+    }]);
     addLog('Brain.status() → base class output', 'call');
-    addLog(lines[0].message, healthy ? 'ok' : 'crit');
   };
 
   const handleChild = (key: BrainKey) => {
@@ -105,8 +100,6 @@ export default function Home() {
     addLog(`${META[key].label}.status() → polymorphic override`, 'call');
     results.forEach(r => addLog(r.message, r.healthy ? 'ok' : 'crit'));
   };
-
-  // ── Checkboxes → got_hurt() only, NO status() output ────────────────────
 
   const handleBrainCheckbox = (checked: boolean) => {
     setBrainDamaged(checked);
@@ -136,8 +129,6 @@ export default function Home() {
   };
 
   const anyDamaged = (key: BrainKey) => regionDamaged[key].some(Boolean);
-
-  // SVG connector positions for fan-out (percent x positions of 4 children)
   const fanX = [12.5, 37.5, 62.5, 87.5];
 
   return (
@@ -171,11 +162,11 @@ export default function Home() {
         {/* ── LEFT: Hierarchy ── */}
         <div className="p-8 flex flex-col items-center gap-0 overflow-auto">
 
-          {/* ── ADT node ── */}
+          {/* ADT node */}
           <motion.button
             initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             onClick={handleADT}
-            className={`node-adt rounded px-8 py-4 text-center w-64 ${selected === 'adt' ? 'border-white/40' : ''}`}>
+            className={`node-adt rounded px-8 py-4 text-center w-72 ${selected === 'adt' ? 'border-white/40' : ''}`}>
             <div className="text-[9px] mb-1 tracking-widest" style={{ color: 'var(--text-dim)' }}>«abstract»</div>
             <div className="font-display text-lg font-bold" style={{ color: 'var(--text)' }}>BrainADT</div>
             <div className="mt-2 text-[9px] text-left space-y-0.5" style={{ color: 'var(--text-muted)' }}>
@@ -186,24 +177,28 @@ export default function Home() {
             </div>
           </motion.button>
 
-          {/* ADT → Brain arrow */}
+          {/* ADT → Brain */}
           <svg width="2" height="36" style={{ display: 'block', overflow: 'visible' }}>
             <line x1="1" y1="0" x2="1" y2="30" className="connector" strokeWidth="1.5" />
             <polygon points="1,36 -4,26 6,26" fill="rgba(200,255,232,0.25)" />
           </svg>
 
-          {/* ── Brain node ── */}
+          {/* Brain node */}
           <motion.div
             initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
             className="flex items-center gap-3">
             <button onClick={handleBrain}
-              className={`node-base rounded px-8 py-4 text-center w-64 transition-all ${selected === 'brain' ? 'border-white/50' : ''}`}>
-              <div className="text-[9px] mb-1 tracking-widest" style={{ color: 'var(--text-dim)' }}>«base class»</div>
-              <div className={`font-display text-lg font-bold ${brainDamaged ? 'vital-crit' : 'vital-ok'}`}>
-                Brain {brainDamaged && <span className="text-[10px] blink ml-1">⚠</span>}
+              className={`node-base rounded w-72 transition-all ${selected === 'brain' ? 'border-white/50' : ''}`}>
+              {/* header row */}
+              <div className="px-5 py-3 border-b" style={{ borderColor: 'var(--border2)' }}>
+                <div className="text-[9px] mb-1 tracking-widest" style={{ color: 'var(--text-dim)' }}>«base class»</div>
+                <div className={`font-display text-lg font-bold ${brainDamaged ? 'vital-crit' : 'vital-ok'}`}>
+                  Brain {brainDamaged && <span className="text-[10px] blink ml-1">⚠</span>}
+                </div>
               </div>
-              <div className="mt-2 text-[9px] text-left space-y-0.5" style={{ color: 'var(--text-muted)' }}>
-                <div>- __name &nbsp;- __struct &nbsp;- _is_damaged</div>
+              {/* body */}
+              <div className="px-5 py-2 text-[9px] space-y-0.5 text-left" style={{ color: 'var(--text-muted)' }}>
+                <div>- __name &nbsp;· &nbsp;- __struct &nbsp;· &nbsp;- _is_damaged</div>
                 <div className="border-t my-1" style={{ borderColor: 'var(--border2)' }} />
                 <div>+ status() &nbsp;<span style={{ color: 'var(--green-dim)' }}>«concrete»</span></div>
                 <div>+ got_hurt(index) &nbsp;<span style={{ color: 'var(--green-dim)' }}>«concrete»</span></div>
@@ -218,49 +213,32 @@ export default function Home() {
             </div>
           </motion.div>
 
-          {/* Brain → children fan-out SVG */}
+          {/* Fan-out arrows */}
           <div className="relative w-full max-w-5xl" style={{ height: '48px' }}>
             <svg className="absolute inset-0 w-full h-full overflow-visible" preserveAspectRatio="none">
-              {/* vertical from Brain down to horizontal bar */}
               <line x1="50%" y1="0" x2="50%" y2="16" className="connector" strokeWidth="1.5" />
-              {/* horizontal bar */}
               <line x1={`${fanX[0]}%`} y1="16" x2={`${fanX[3]}%`} y2="16" className="connector" strokeWidth="1.5" />
-              {/* verticals + arrowheads down to each child */}
               {fanX.map((x, i) => (
-                <g key={i}>
-                  <line x1={`${x}%`} y1="16" x2={`${x}%`} y2="42" className="connector" strokeWidth="1.5" />
-                  <polygon
-                    points={`${x}% 48 calc(${x}% - 4px) 38 calc(${x}% + 4px) 38`}
-                    fill="rgba(200,255,232,0.2)"
-                    style={{ transformOrigin: `${x}% 48px` }}
-                  />
-                </g>
+                <line key={i} x1={`${x}%`} y1="16" x2={`${x}%`} y2="48" className="connector" strokeWidth="1.5" />
               ))}
             </svg>
-            {/* arrowheads as absolutely positioned divs (SVG % + polygon is tricky) */}
             <div className="absolute bottom-0 left-0 w-full flex">
               {fanX.map((x, i) => (
                 <div key={i} className="absolute" style={{ left: `${x}%`, transform: 'translateX(-50%)' }}>
-                  <div style={{
-                    width: 0, height: 0,
-                    borderLeft: '5px solid transparent',
-                    borderRight: '5px solid transparent',
-                    borderTop: '6px solid rgba(200,255,232,0.3)',
-                  }} />
+                  <div style={{ width:0, height:0, borderLeft:'5px solid transparent', borderRight:'5px solid transparent', borderTop:'6px solid rgba(200,255,232,0.3)' }} />
                 </div>
               ))}
             </div>
           </div>
 
-          {/* ── Children: one row ── */}
+          {/* ── Child nodes: one row ── */}
           <div className="grid grid-cols-4 gap-3 w-full max-w-5xl">
             {CHILD_KEYS.map((key, ci) => {
-              const meta     = META[key];
-              const damaged  = anyDamaged(key);
-              const regions  = inst[key].struct;
-              const dmgArr   = regionDamaged[key];
-              const isActive = selected === key;
-              const isFlash  = flash === key;
+              const meta    = META[key];
+              const damaged = anyDamaged(key);
+              const regions = inst[key].struct;
+              const dmgArr  = regionDamaged[key];
+              const isFlash = flash === key;
 
               return (
                 <motion.div key={key}
@@ -269,43 +247,55 @@ export default function Home() {
                   transition={{ delay: 0.3 + ci * 0.07 }}
                   className={isFlash ? 'flash' : ''}>
 
-                  {/* Class card — click = status() */}
-                  <button onClick={() => handleChild(key)}
-                    className={`node-child rounded w-full p-3 text-left ${isActive ? 'active' : ''}`}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className={`font-display text-sm font-bold ${meta.color}`}>{meta.label}</span>
-                      <div className="w-1.5 h-1.5 rounded-full"
-                        style={{ background: damaged ? 'var(--red)' : 'var(--green)', animation: 'pulse 2s infinite' }} />
-                    </div>
-                    <div className="text-[9px] mb-1" style={{ color: 'var(--text-dim)' }}>{meta.korean}</div>
-                    <div className="text-[8px] mb-2" style={{ color: 'var(--text-muted)' }}>
-                      override status()
-                    </div>
-                    {/* region health dots */}
-                    <div className="flex gap-1 flex-wrap mb-1">
+                  {/* Card with DAMAGE column */}
+                  <div className={`node-child rounded overflow-hidden ${selected === key ? 'active' : ''}`}>
+
+                    {/* Card header — click = status() */}
+                    <button onClick={() => handleChild(key)} className="w-full text-left px-3 py-2.5 border-b"
+                      style={{ borderColor: 'var(--border2)' }}>
+                      <div className="flex items-center justify-between">
+                        <span className={`font-display text-sm font-bold ${meta.color}`}>{meta.label}</span>
+                        <div className="w-1.5 h-1.5 rounded-full"
+                          style={{ background: damaged ? 'var(--red)' : 'var(--green)', animation: 'pulse 2s infinite' }} />
+                      </div>
+                      <div className="text-[8px] mt-0.5" style={{ color: 'var(--text-dim)' }}>
+                        {meta.korean} · override status()
+                      </div>
+                    </button>
+
+                    {/* Region rows: left = name, right = DAMAGE checkbox */}
+                    <div>
+                      {/* Column header */}
+                      <div className="grid border-b" style={{ gridTemplateColumns: '1fr 52px', borderColor: 'var(--border2)' }}>
+                        <div className="px-3 py-1 text-[8px]" style={{ color: 'var(--text-dim)' }}>REGION</div>
+                        <div className="px-2 py-1 text-[8px] text-center border-l"
+                          style={{ color: 'var(--red)', borderColor: 'var(--border2)' }}>DMG</div>
+                      </div>
+
+                      {/* Each region row */}
                       {regions.map((r, ri) => (
-                        <div key={ri} className="w-2 h-2 rounded-sm transition-colors"
-                          style={{ background: dmgArr[ri] ? 'var(--red)' : meta.hex, opacity: dmgArr[ri] ? 1 : 0.5 }}
-                          title={r} />
+                        <div key={ri}
+                          className="grid border-b last:border-0"
+                          style={{ gridTemplateColumns: '1fr 52px', borderColor: 'var(--border2)' }}>
+                          {/* Region name */}
+                          <div className="px-3 py-2 flex items-center gap-1.5">
+                            <div className="w-1.5 h-1.5 rounded-sm shrink-0 transition-colors"
+                              style={{ background: dmgArr[ri] ? 'var(--red)' : meta.hex, opacity: dmgArr[ri] ? 1 : 0.5 }} />
+                            <span className={`text-[9px] leading-tight ${dmgArr[ri] ? 'vital-crit' : ''}`}
+                              style={{ color: dmgArr[ri] ? undefined : 'var(--text-muted)' }}>
+                              {r}
+                            </span>
+                          </div>
+                          {/* Damage checkbox */}
+                          <div className="flex items-center justify-center border-l"
+                            style={{ borderColor: 'var(--border2)', background: dmgArr[ri] ? 'rgba(255,68,68,0.06)' : 'transparent' }}>
+                            <input type="checkbox" className="med-checkbox"
+                              checked={dmgArr[ri]}
+                              onChange={e => handleRegionCheckbox(key, ri, e.target.checked)} />
+                          </div>
+                        </div>
                       ))}
                     </div>
-                    {damaged && <div className="text-[8px] vital-crit">⚠ DAMAGE</div>}
-                  </button>
-
-                  {/* Region checkboxes — click = got_hurt() only */}
-                  <div className="mt-2 space-y-1.5 px-1">
-                    {regions.map((r, ri) => (
-                      <label key={ri} className="flex items-center gap-1.5 cursor-pointer group">
-                        <input type="checkbox" className="med-checkbox"
-                          checked={dmgArr[ri]}
-                          onChange={e => handleRegionCheckbox(key, ri, e.target.checked)} />
-                        <span className={`text-[9px] leading-tight transition-colors
-                          ${dmgArr[ri] ? 'vital-crit' : 'group-hover:text-white'}`}
-                          style={{ color: dmgArr[ri] ? undefined : 'var(--text-muted)' }}>
-                          {r}
-                        </span>
-                      </label>
-                    ))}
                   </div>
                 </motion.div>
               );
@@ -313,7 +303,7 @@ export default function Home() {
           </div>
 
           {/* Legend */}
-          <div className="flex gap-6 mt-8 text-[9px]" style={{ color: 'var(--text-dim)' }}>
+          <div className="flex gap-6 mt-6 text-[9px]" style={{ color: 'var(--text-dim)' }}>
             <span className="flex items-center gap-1.5">
               <div className="w-4 h-px border-t border-dashed" style={{ borderColor: 'rgba(200,255,232,0.2)' }} />
               inheritance
@@ -336,7 +326,6 @@ export default function Home() {
         {/* ── RIGHT: Monitor ── */}
         <div className="border-l flex flex-col" style={{ borderColor: 'var(--border)' }}>
 
-          {/* Monitor header */}
           <div className="px-5 py-3 border-b flex items-center justify-between"
             style={{ borderColor: 'var(--border)', background: 'var(--panel)' }}>
             <div className="flex items-center gap-3">
@@ -372,9 +361,7 @@ export default function Home() {
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                   className="h-full flex flex-col items-center justify-center gap-2 min-h-[200px]">
                   <div className="text-2xl blink" style={{ color: 'var(--green)' }}>_</div>
-                  <div className="text-[10px]" style={{ color: 'var(--text-dim)' }}>
-                    AWAITING INPUT — SELECT NODE
-                  </div>
+                  <div className="text-[10px]" style={{ color: 'var(--text-dim)' }}>AWAITING INPUT — SELECT NODE</div>
                 </motion.div>
               ) : (
                 <motion.div key={selected}
